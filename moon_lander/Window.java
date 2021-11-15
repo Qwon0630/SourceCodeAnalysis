@@ -1,7 +1,10 @@
 package moon_lander;
 
 import javax.swing.JFrame;
+
 import javax.swing.SwingUtilities;
+import java.awt.*;
+import java.awt.event.*;
 
 /**
  * Creates frame and set its properties.
@@ -13,6 +16,8 @@ public class Window extends JFrame{
         
     private Window()
     {
+    	
+    	
         // Sets the title for this frame.
         this.setTitle("Moon Lander");
         
@@ -52,4 +57,6 @@ public class Window extends JFrame{
             }
         });
     }
+
+	
 }

@@ -2,6 +2,7 @@ package moon_lander;
 
 import java.awt.Graphics2D;
 
+
 import java.net.URL;
 import java.util.Random;
 import java.awt.image.BufferedImage;
@@ -18,8 +19,11 @@ public class Bullet {
     public int x;
 
     public int y;
+
     
-    public int bulletSpeedY;
+    
+    
+    public double bulletSpeedY;
 
     private BufferedImage bulletImage;
 
@@ -36,7 +40,7 @@ public class Bullet {
         	this.bulletSpeedY = 5;
         }
     }
-
+    
 
     public void tick() {
         y-= bulletSpeedY;

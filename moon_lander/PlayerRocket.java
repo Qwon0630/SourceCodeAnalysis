@@ -1,6 +1,8 @@
 package moon_lander;
 
 import java.awt.Color;
+
+import java.awt.Point;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
@@ -33,7 +35,7 @@ public class PlayerRocket {
     /**
      * Y coordinate of the rocket.
      */
-    public int y;
+    public static int y;
 
     /**
      * Is rocket landed?
@@ -104,8 +106,12 @@ public class PlayerRocket {
         Initialize(1);
         LoadContent();
 
+        
         // Now that we have rocketImgWidth we set starting x coordinate.
+        if((Framework.frameWidth - rocketImgWidth)>0) {
         x = random.nextInt(Framework.frameWidth - rocketImgWidth);
+        }
+        
     }
     public PlayerRocket(int i) {
     	Initialize(i);
@@ -181,14 +187,16 @@ public class PlayerRocket {
         landed = false;
         crashed = false;
 
+        if((Framework.frameWidth - rocketImgWidth)>0) {
         x = random.nextInt(Framework.frameWidth - rocketImgWidth);
+        }
         y = 40;
         speedX = 0;
         speedY = 0;
     }
 
     public Rectangle makeRect() {
-        return new Rectangle(x, y, rocketImgWidth, rocketImgHeight);
+        return new Rectangle((int)x, (int)y, rocketImgWidth, rocketImgHeight);
     }
 
     /**
@@ -232,7 +240,9 @@ public class PlayerRocket {
 
     public void Draw(Graphics2D g2d) {
         g2d.setColor(Color.white);
+        
         g2d.drawString("Rocket coordinates: " + x + " : " + y, 5, 15);
+        
         // If the rocket is landed.
         if (landed) {
             g2d.drawImage(rocketLandedImg, x, y, null);

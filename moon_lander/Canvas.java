@@ -1,20 +1,8 @@
 package moon_lander;
 
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Toolkit;
-import java.awt.event.KeyEvent;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
+import java.awt.event.*;
 import javax.swing.JPanel;
 
 /**
@@ -24,15 +12,19 @@ import javax.swing.JPanel;
  * @author www.gametutorial.net
  */
 
-public abstract class Canvas extends JPanel implements KeyListener, MouseListener, FocusListener {
+public abstract class Canvas extends JPanel implements KeyListener, MouseListener, FocusListener, MouseMotionListener{
 
     // Keyboard states - Here are stored states for keyboard keys - is it down or
     // not.
+	Point mouse = new Point(0, 0);
     private static boolean[] keyboardState = new boolean[525];
 
     // Mouse states - Here are stored states for mouse keys - is it down or not.
     private static boolean[] mouseState = new boolean[3];
 
+    boolean isPress = false;
+    
+    
     public Canvas() {
         // We use double buffer to draw on the screen.
         this.setDoubleBuffered(true);
@@ -56,6 +48,10 @@ public abstract class Canvas extends JPanel implements KeyListener, MouseListene
         this.addMouseListener(this);
 
         this.addFocusListener(this);
+        
+        this.addMouseMotionListener(this);
+        
+        
 
     }
 
@@ -74,6 +70,9 @@ public abstract class Canvas extends JPanel implements KeyListener, MouseListene
         Graphics2D g2d = (Graphics2D) g;
         super.paintComponent(g2d);
         Draw(g2d);
+        g2d.drawLine(mouse.x, mouse.y-10,mouse.x,mouse.y+10);
+        g2d.drawLine(mouse.x-10,mouse.y,mouse.x+10,mouse.y);
+        
     }
 
     // Keyboard
@@ -131,16 +130,21 @@ public abstract class Canvas extends JPanel implements KeyListener, MouseListene
     // Methods of the mouse listener.
     @Override
     public void mousePressed(MouseEvent e) {
-        mouseKeyStatus(e, true);
+        
+        
+        
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        mouseKeyStatus(e, false);
+    	
+              
+        
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
+    	
     }
 
     @Override
@@ -150,5 +154,16 @@ public abstract class Canvas extends JPanel implements KeyListener, MouseListene
     @Override
     public void mouseExited(MouseEvent e) {
     }
+    @Override 
+    public void mouseMoved(MouseEvent e)//마우스를 움직이면 
+    { 
+          mouse = e.getPoint(); 
+   } 
+   @Override 
+   public void mouseDragged(MouseEvent e)//마우스 버튼을 누루고 움직이면 
+   { 
+         mouse = e.getPoint(); 
+  } 
+    
 
 }

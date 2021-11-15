@@ -1,16 +1,17 @@
 package moon_lander;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
-import java.awt.Rectangle;
+
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.awt.*;
+import java.awt.event.*;
+
 
 /**
  * Actual game.
@@ -18,7 +19,10 @@ import java.util.LinkedList;
  * @author www.gametutorial.net
  */
 
-public class Game {
+public class Game extends MouseAdapter {
+	
+	
+    ArrayList<Bullet> bulletData = new ArrayList<Bullet>();//만든 총알들을 저장
     
     private int stageLevel;
     /**
@@ -47,21 +51,35 @@ public class Game {
     
     private MovingEnemyWithBullet movingBulletEnemy = new MovingEnemyWithBullet();
 
-  
+    
 
     private int baseScore = 1000;
 
+    
+    
+//    public void mousePressed(MouseEvent e)//마우스를 버튼을 누루면 
+//    { 
+//          isPress = true; 
+//          makeBullet();//총알 생성 
+//   } 
+//   
+//   public void mouseReleased(MouseEvent e)//마우스 버튼을 놓으면 
+//   { 
+//         isPress = false; 
+//  }
     public Game(int level) {
         Framework.gameState = Framework.GameState.GAME_CONTENT_LOADING;
         stageLevel = level;
         Thread threadForInitGame = new Thread() {
             @Override
             public void run() {
+            	
                 // Sets variables and objects for the game.
                 Initialize();
                 // Load game files (images, sounds, ...)
                 LoadContent();
-
+                
+                
                 Framework.gameState = Framework.GameState.PLAYING;
             }
         };
@@ -148,6 +166,7 @@ public class Game {
         // or crashed?
         // First we check bottom y coordinate of the rocket if is it near the landing
         // area.
+        
         if (playerRocket1.y + playerRocket1.rocketImgHeight - 10 > landingArea1.y) {
             // Here we check if the rocket is over landing area.
             if ((playerRocket1.x > landingArea1.x) && (playerRocket1.x < landingArea1.x
@@ -182,6 +201,8 @@ public class Game {
                 break;
             }
         }
+        
+        
 
     }
 
@@ -203,6 +224,9 @@ public class Game {
         moving_Enemy.Draw(g2d);
         
         movingBulletEnemy.Draw(g2d);
+        
+        
+        
     }
 
     /**
