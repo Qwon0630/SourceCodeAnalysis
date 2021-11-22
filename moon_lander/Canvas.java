@@ -12,7 +12,7 @@ import javax.swing.JPanel;
  * @author www.gametutorial.net
  */
 
-public abstract class Canvas extends JPanel implements KeyListener, MouseListener, FocusListener, MouseMotionListener{
+public abstract class Canvas extends JPanel implements KeyListener, MouseListener, FocusListener, MouseMotionListener, ActionListener{
 
     // Keyboard states - Here are stored states for keyboard keys - is it down or
     // not.
@@ -50,6 +50,7 @@ public abstract class Canvas extends JPanel implements KeyListener, MouseListene
         this.addFocusListener(this);
         
         this.addMouseMotionListener(this);
+        
         
         
 

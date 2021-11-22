@@ -12,7 +12,7 @@ import java.util.Random;
 import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 
-public class Item {
+public class Item{
     private Random random;
 
     public int x;
@@ -25,7 +25,7 @@ public class Item {
 
     public int itemImgHeight;
 
-    public boolean isTouched;
+    public static boolean isTouched;
 
     private BufferedImage blackscreenImg;
 
@@ -67,14 +67,6 @@ public class Item {
         return new Rectangle(x, y, itemImgWidth, itemImgHeight);
     }
 
-    public void DeleteLandingAreaItem(boolean hide) {
-        // hide landing area
-
-    }
-
-    public void MovingEnemyItem() {
-        // make moving enemy
-    }
 
     public void Draw(Graphics2D g2d) {
         g2d.drawImage(itemImg, x, y, null);

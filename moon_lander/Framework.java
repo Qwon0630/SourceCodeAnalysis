@@ -77,7 +77,7 @@ public class Framework extends Canvas{
      */
     public static GameState gameState;
 
-    PlayerRocket pr = new PlayerRocket();
+    PlayerRocket pr = new PlayerRocket(1,1);
     /**
      * Elapsed game time in nanoseconds.
      */
@@ -100,156 +100,138 @@ public class Framework extends Canvas{
     private BufferedImage moonLanderMenuImg;
     
     
-    public void makeBullet() 
-    { 
-          if (System.currentTimeMillis() - prevtime > 300)//약 0.3초(300/1000) 마다 총알 생성 
-          { 
-        	    double x1 = PlayerRocket.x+pr.rocketImgWidth/2; 
-        	    double y1 = PlayerRocket.y+pr.rocketImgHeight; 
-        	    double x2 = mouse.x; 
-        	    double y2 = mouse.y; 
-                double d = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));//네모와 마우스 사이의 거리 측정 
-                double vx = (x2 - x1) / d * SPEED; 
-                double vy = (y2 - y1) / d * SPEED;//총알 속도 계산 
-                PlayerBullet bullet = new PlayerBullet(x1, y1, vx, vy);//총알 객체 생성 
-                bulletData.add(bullet);//배열에 저장 
-                prevtime = System.currentTimeMillis();//생성된 시간 저장 
-         } 
-    } 
     
-    public void moveBullet() 
-    { 
-          for (int i = 0; i < bulletData.size(); i++) 
-          { 
-                if (bulletData.get(i).moveBullet() == false)//화면을 벗어나면 삭제 하기 
-                { 
-                      bulletData.remove(i); 
-                      break; 
-               } 
-        } 
-    }
     
 
     /* 스코어 */
     public static Score score = new Score();
 
-    JButton button1 = new JButton("기본모드");
-    JButton button2 = new JButton("2인 경쟁모드");
-    JButton button3 = new JButton("난이도 선택모드");
-    JButton button4 = new JButton("메인");
+    
+    JButton btn1p = new JButton("기본모드");
+    JButton btn2p = new JButton("2인 경쟁모드");
+    JButton btnLevelMode = new JButton("난이도 선택모드");
+    JButton btnMain = new JButton("메인");
 
-    JButton button5 = new JButton("Level 1");
-    JButton button6 = new JButton("Level 2");
-    JButton button7 = new JButton("Level 3");
-    JButton button8 = new JButton("Level 4");
-    JButton button9 = new JButton("Level 5");
+    JButton btnLevel1 = new JButton("Level 1");
+    JButton btnLevel2 = new JButton("Level 2");
+    JButton btnLevel3 = new JButton("Level 3");
+    JButton btnLevel4 = new JButton("Level 4");
+    JButton btnLevel5 = new JButton("Level 5");
 
     public void Levelbutton(boolean add) {
         if (add) {
-            this.add(button5);
-            this.add(button6);
-            this.add(button7);
-            this.add(button8);
-            this.add(button9);
+            this.add(btnLevel1);
+            this.add(btnLevel2);
+            this.add(btnLevel3);
+            this.add(btnLevel4);
+            this.add(btnLevel5);
 
-            button5.setVisible(add);
-            button5.setBounds(100, 400, 100, 50);
+           
+            btnLevel1.setVisible(add);
+            btnLevel1.setBounds(100, 400, 100, 50);
             /* Level 1 */
-            button5.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    newGame(1);
-                }
-            });
+            
 
-            button6.setVisible(add);
-            button6.setBounds(210, 400, 100, 50);
+            btnLevel2.setVisible(add);
+            btnLevel2.setBounds(210, 400, 100, 50);
             /* Level 2 */
-            button6.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    newGame(2);
-                }
-            });
-            button7.setVisible(add);
-            button7.setBounds(330, 400, 100, 50);
+            
+            btnLevel3.setVisible(add);
+            btnLevel3.setBounds(330, 400, 100, 50);
             /* Level 3 */
-            button7.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    newGame(3);
-                }
-            });
+            
 
-            button8.setVisible(add);
-            button8.setBounds(450, 400, 100, 50);
+            btnLevel4.setVisible(add);
+            btnLevel4.setBounds(450, 400, 100, 50);
             /* Level 4 */
-            button8.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    newGame(4);
-                }
-            });
-            button9.setVisible(add);
-            button9.setBounds(570, 400, 100, 50);
+            
+            btnLevel5.setVisible(add);
+            btnLevel5.setBounds(570, 400, 100, 50);
             /* Level 5 */
-            button9.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    newGame(5);
-                }
-            });
+            
+            ActionListener listener = new ActionListener() {
+            	public void actionPerformed(ActionEvent e) {
+            		if(btnLevel1.equals(e.getSource())) {
+            			newGame(1);
+            		}
+            		if(btnLevel2.equals(e.getSource())) {
+            			newGame(2);
+            		}
+            		if(btnLevel3.equals(e.getSource())) {
+            			newGame(3);
+            		}
+            		if(btnLevel4.equals(e.getSource())) {
+            			newGame(4);
+            		}
+            		if(btnLevel5.equals(e.getSource())) {
+            			newGame(5);
+            		}
+            		
+            	}
+            };
+            btnLevel1.addActionListener(listener);
+            btnLevel2.addActionListener(listener);
+            btnLevel3.addActionListener(listener);
+            btnLevel4.addActionListener(listener);
+            btnLevel5.addActionListener(listener);
 
         } else {
-            this.remove(button5);
-            this.remove(button6);
-            this.remove(button7);
-            this.remove(button8);
-            this.remove(button9);
+            this.remove(btnLevel1);
+            this.remove(btnLevel2);
+            this.remove(btnLevel3);
+            this.remove(btnLevel4);
+            this.remove(btnLevel5);
 
         }
     }
 
     public void Mainbutton(boolean add) {
         if (add) {
-            this.add(button1);
-            this.add(button2);
-            this.add(button3);
-            this.add(button4);
+            this.add(btn1p);
+            this.add(btn2p);
+            this.add(btnLevelMode);
+            this.add(btnMain);
 
-            button1.setVisible(add);
-            button1.setBounds(100, 400, 125, 50);
+            btn1p.setVisible(add);
+            btn1p.setBounds(100, 400, 125, 50);
 
-            button1.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    newGame(1);
-                }
-            });
-
-            button2.setVisible(add);
-            button2.setBounds(250, 400, 125, 50);
-
-            button2.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    newGame2p();
-                }
-            });
-            button3.setVisible(add);
-            button3.setBounds(400, 400, 125, 50);
-            /* 레벨 선택 */
-            button3.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    Framework.gameState = Framework.GameState.LEVEL_MENU;
-
-                }
-            });
-            button4.setVisible(add);
-            button4.setBounds(550, 400, 125, 50);
-            button4.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    Framework.gameState = Framework.GameState.MAIN_MENU;
-                }
-            });
+            btn2p.setVisible(add);
+            btn2p.setBounds(250, 400, 125, 50);
+            
+            btnLevelMode.setVisible(add);
+            btnLevelMode.setBounds(400, 400, 125, 50);
+            
+            btnMain.setVisible(add);
+            btnMain.setBounds(550, 400, 125, 50);
+            
+            ActionListener listener = new ActionListener() {
+            	public void actionPerformed(ActionEvent e) {
+            		if(btn1p.equals(e.getSource())) {
+            			newGame(1);
+            		}
+            		if(btn2p.equals(e.getSource())) {
+            			newGame2p();
+            		}
+            		if(btnLevelMode.equals(e.getSource())) {
+            			Framework.gameState = Framework.GameState.LEVEL_MENU;
+            		}
+            		if(btnMain.equals(e.getSource())) {
+            			Framework.gameState = Framework.GameState.MAIN_MENU;
+            		}
+            		
+            		
+            	}
+            };
+            btn1p.addActionListener(listener);
+            btn2p.addActionListener(listener);
+            btnLevelMode.addActionListener(listener);
+            btnMain.addActionListener(listener);
+            
         } else {
-            this.remove(button1);
-            this.remove(button2);
-            this.remove(button3);
-            this.remove(button4);
+            this.remove(btn1p);
+            this.remove(btn2p);
+            this.remove(btnLevelMode);
+            this.remove(btnMain);
 
         }
     }
@@ -446,12 +428,8 @@ public class Framework extends Canvas{
                 Levelbutton(false);
                 break;
 
-//            case PLAYING_SHOOTING:
-//                sg.Draw(g2d, mousePosition());
-//                Mainbutton(false);
-//                Levelbutton(false);
-//                break;
             case BLACKSCREEN:
+            	
                 game2p.DrawBlackScreen(g2d);
                 blackscreenTime += 1;
                 if (blackscreenTime > 50) {
@@ -502,6 +480,9 @@ public class Framework extends Canvas{
                 Mainbutton(false);
                 Levelbutton(false);
                 break;
+                default:
+                	break;
+            
         }
     }
 
@@ -593,6 +574,34 @@ public class Framework extends Canvas{
                 break;
         }
     }
+    public void makeBullet()
+    { 
+          if (System.currentTimeMillis() - prevtime > 300)//약 0.3초(300/1000) 마다 총알 생성 
+          { 
+        	    double x1 = PlayerRocket.rocket1_X+pr.rocketImgWidth/2; 
+        	    double y1 = PlayerRocket.rocket1_Y+pr.rocketImgHeight; 
+        	    double x2 = mouse.x; 
+        	    double y2 = mouse.y; 
+                double d = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));//네모와 마우스 사이의 거리 측정 
+                double vx = (x2 - x1) / d * SPEED; 
+                double vy = (y2 - y1) / d * SPEED;//총알 속도 계산 
+                PlayerBullet bullet = new PlayerBullet(x1, y1, vx, vy);//총알 객체 생성 
+                bulletData.add(bullet);//배열에 저장 
+                prevtime = System.currentTimeMillis();//생성된 시간 저장 
+         } 
+    } 
+    
+    public void moveBullet() 
+    {
+          for (int i = 0; i < bulletData.size(); i++) 
+          { 
+                if (bulletData.get(i).moveBullet() == false)//화면을 벗어나면 삭제 하기 
+                { 
+                      bulletData.remove(i); 
+                      break; 
+               } 
+        } 
+    }
 
     /**
      * This method is called when mouse button is clicked.
@@ -616,4 +625,12 @@ public class Framework extends Canvas{
         isPress = false;
         
     }
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
 }

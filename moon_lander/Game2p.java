@@ -24,16 +24,15 @@ public class Game2p {
     /**
      * The space rocket with which player will have to land.
      */
-    private PlayerRocket playerRocket1 = new PlayerRocket();
+    private PlayerRocket playerRocket = new PlayerRocket(1,2);
 
-    private PlayerRocket2 playerRocket2 = new PlayerRocket2();
 
     /**
      * Landing area on which rocket will have to land.
      */
-    private LandingArea landingArea1 = new LandingArea();
+    private LandingArea landingArea = new LandingArea(2);
 
-    private LandingArea2 landingArea2 = new LandingArea2();
+    
 
     public static int itemTime = 0;
 
@@ -41,7 +40,7 @@ public class Game2p {
     private Item item2 = new Item();
     private Item item3 = new Item();
 
-    private Item itemType[] = new Item[3];
+
 
     /**
      * Game background image.
@@ -76,11 +75,10 @@ public class Game2p {
      * Set variables and objects for the game.
      */
     private void Initialize() {
-        playerRocket1 = new PlayerRocket();
-        playerRocket2 = new PlayerRocket2();
+        playerRocket = new PlayerRocket(1,2);
 
-        landingArea1 = new LandingArea();
-        landingArea2 = new LandingArea2();
+        landingArea = new LandingArea(2);
+        
 
     }
 
@@ -113,12 +111,10 @@ public class Game2p {
      */
     public void RestartGame2() {
 
-        playerRocket1.ResetPlayer();
+        playerRocket.ResetPlayer();
 
-        playerRocket2.ResetPlayer();
-
-        landingArea1.ResetLandingArea();
-        landingArea2.ResetLandingArea2();
+        landingArea.ResetLandingArea();
+        
 
         item1.ResetItem();
         item2.ResetItem();
@@ -135,12 +131,12 @@ public class Game2p {
     public void UpdateGame(long gameTime, Point mousePosition) {
         // Move the rocket
 
-        playerRocket1.Update();
-        playerRocket2.Update2();
+        playerRocket.Update();
+        
 
         // Item Collision
-        Rectangle rocket1 = playerRocket1.makeRect();
-        Rectangle rocket2 = playerRocket2.makeRect();
+        Rectangle rocket1 = playerRocket.makeRect1p();
+        Rectangle rocket2 = playerRocket.makeRect2p();
         Rectangle item11 = item1.drawRect();
         Rectangle item22 = item2.drawRect();
         Rectangle item33 = item3.drawRect();
@@ -148,13 +144,16 @@ public class Game2p {
         if (rocket1.intersects(item11) || rocket2.intersects(item11)) {
             item1.isTouched = true;
             Framework.gameState = Framework.gameState.BLACKSCREEN;
+            
+            
+            
         }
         else if(rocket1.intersects(item22)||rocket2.intersects(item22)) {
         	if(rocket1.intersects(item22)) {
-        		playerRocket1.crashed = true;
+        		playerRocket.crashed_1p = true;
         	}
         	else
-        		playerRocket2.crashed = true;
+        		playerRocket.crashed_2p = true;
         	
         	Framework.gameState = Framework.gameState.GAMEOVER2P;
         }
@@ -178,31 +177,31 @@ public class Game2p {
         // or crashed?
         // First we check bottom y coordinate of the rocket if is it near the landing
         // area.
-        if (playerRocket1.y + playerRocket1.rocketImgHeight - 10 > landingArea1.y) {
+        if (playerRocket.rocket1_Y + playerRocket.rocketImgHeight - 10 > landingArea.landingArea1_Y) {
             // Here we check if the rocket is over landing area.
-            if ((playerRocket1.x > landingArea1.x) && (playerRocket1.x < landingArea1.x
-                    + landingArea1.landingArea1ImgWidth - playerRocket1.rocketImgWidth)) {
+            if ((playerRocket.rocket1_X > landingArea.landingArea1_X) && (playerRocket.rocket1_X < landingArea.landingArea1_X
+                    + landingArea.landingArea1ImgWidth - playerRocket.rocketImgWidth)) {
                 // Here we check if the rocket speed isn't too high.
-                if (playerRocket1.speedY <= playerRocket1.topLandingSpeed)
-                    playerRocket1.landed = true;
+                if (playerRocket.speed1p_Y <= playerRocket.topLandingSpeed)
+                    playerRocket.landed_1p = true;
                 else
-                    playerRocket1.crashed = true;
+                    playerRocket.crashed_1p = true;
             } else
-                playerRocket1.crashed = true;
+                playerRocket.crashed_1p = true;
 
             Framework.gameState = Framework.GameState.GAMEOVER2P;
         }
-        if (playerRocket2.y + playerRocket2.rocket2pImgHeight - 10 > landingArea2.y) {
+        if (playerRocket.rocket2_Y + playerRocket.rocket2pImgHeight - 10 > landingArea.landingArea2_Y) {
             // Here we check if the rocket is over landing area.
-            if ((playerRocket2.x > landingArea2.x) && (playerRocket2.x < landingArea2.x
-                    + landingArea2.landingArea2ImgWidth - playerRocket2.rocket2pImgWidth)) {
+            if ((playerRocket.rocket2_X > landingArea.landingArea2_X) && (playerRocket.rocket2_X < landingArea.landingArea2_X
+                    + landingArea.landingArea2ImgWidth - playerRocket.rocket2pImgWidth)) {
                 // Here we check if the rocket speed isn't too high.
-                if (playerRocket2.speedY <= playerRocket2.topLandingSpeed)
-                    playerRocket2.landed = true;
+                if (playerRocket.speed2p_Y <= playerRocket.topLandingSpeed)
+                    playerRocket.landed_2p = true;
                 else
-                    playerRocket2.crashed = true;
+                    playerRocket.crashed_2p = true;
             } else
-                playerRocket2.crashed = true;
+                playerRocket.crashed_2p = true;
 
             Framework.gameState = Framework.GameState.GAMEOVER2P;
         }
@@ -217,20 +216,22 @@ public class Game2p {
     public void Draw(Graphics2D g2d, Point mousePosition) {
         g2d.drawImage(backgroundImg, 0, 0, Framework.frameWidth, Framework.frameHeight, null);
 
-        playerRocket1.Draw(g2d);
-        playerRocket2.Draw(g2d);
+        playerRocket.Draw(g2d);
+        
         item1.Draw(g2d);
         item2.Draw(g2d);
         item3.Draw(g2d);
     }
 
     public void DrawLandingArea1(Graphics2D g2d, Point mousePosition) {
-        landingArea1.Draw(g2d);
+        landingArea.DrawlandingArea1p(g2d);
         
     }
     public void DrawLandingArea2(Graphics2D g2d, Point mousePosition) {
-    	landingArea2.Draw(g2d);
+        landingArea.DrawlandingArea2p(g2d);
+        
     }
+    
 
     /**
      * Draw the game over screen.
@@ -243,24 +244,25 @@ public class Game2p {
         Draw(g2d, mousePosition);
         DrawLandingArea1(g2d, mousePosition);
         DrawLandingArea2(g2d, mousePosition);
+        
 
         g2d.drawString("Press space or enter to restart.", Framework.frameWidth / 2 - 100,
                 Framework.frameHeight / 3 + 70);
 
-        if (playerRocket1.landed) {
+        if (playerRocket.landed_1p) {
             g2d.drawString("1p have successfully landed!", Framework.frameWidth / 2 - 100, Framework.frameHeight / 3);
 
-        } else if (playerRocket2.landed) {
+        } else if (playerRocket.landed_2p) {
             g2d.drawString("2p have successfully landed!", Framework.frameWidth / 2 - 100, Framework.frameHeight / 3);
 
         } else {
-            if (playerRocket1.crashed) {
+            if (playerRocket.crashed_1p) {
                 g2d.setColor(Color.red);
-                g2d.drawString("1p have crashed the rocket!", Framework.frameWidth / 2 - 95, Framework.frameHeight / 3);
+                g2d.drawString("1p win!", Framework.frameWidth / 2 - 95, Framework.frameHeight / 3);
                 g2d.drawImage(redBorderImg, 0, 0, Framework.frameWidth, Framework.frameHeight, null);
-            } else if (playerRocket2.crashed) {
+            } else if (playerRocket.crashed_2p) {
                 g2d.setColor(Color.red);
-                g2d.drawString("2p have crashed the rocket!", Framework.frameWidth / 2 - 95, Framework.frameHeight / 3);
+                g2d.drawString("2p win!", Framework.frameWidth / 2 - 95, Framework.frameHeight / 3);
                 g2d.drawImage(redBorderImg, 0, 0, Framework.frameWidth, Framework.frameHeight, null);
 
             }
