@@ -22,7 +22,8 @@ public abstract class Canvas extends JPanel implements KeyListener, MouseListene
     // Mouse states - Here are stored states for mouse keys - is it down or not.
     private static boolean[] mouseState = new boolean[3];
 
-    boolean isPress = false;
+ // 연료가 0일때 누르지 못하게 하는 변수
+    private static boolean isBlocked = false;
     
     
     public Canvas() {
@@ -76,6 +77,13 @@ public abstract class Canvas extends JPanel implements KeyListener, MouseListene
         
     }
 
+    public static void changeBlockState(boolean flag) {
+        isBlocked = flag;
+    }
+
+    public static boolean getBlock() {
+        return isBlocked;
+    }
     // Keyboard
     /**
      * Is keyboard key "key" down?

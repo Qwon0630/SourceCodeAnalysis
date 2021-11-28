@@ -16,6 +16,7 @@ public class Enemy {
     private String imgURL;
     private int x;
     private int y;
+    private int enemyID;
 
     public Enemy(int id) {
         random = new Random();
@@ -23,8 +24,15 @@ public class Enemy {
             imgURL = "/resources/images/unmovedenemy.png";
         else if (id == 2)
             imgURL = "/resources/images/movingEnemy.png";
+        else if (id == 3)
+            imgURL = "/resources/images/movingEnemy.png";
+        enemyID = id;
         LordImage(imgURL);
         ResetEnemy(id);
+    }
+
+    public int getID() {
+        return this.enemyID;
     }
 
     public int getImgWidth() {
@@ -37,6 +45,10 @@ public class Enemy {
 
     public void setY(int y) {
         this.y = y;
+    }
+
+    public int getX() {
+        return this.x;
     }
 
     public int getY() {

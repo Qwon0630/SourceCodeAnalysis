@@ -1,6 +1,7 @@
 package moon_lander;
 
 import java.awt.Color;
+
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
@@ -15,6 +16,7 @@ import javax.swing.JPanel;
 
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Vector;
 import java.awt.event.*;
 import java.awt.*;
@@ -29,9 +31,11 @@ import java.awt.*;
 public class Framework extends Canvas{
 
 	
-	ArrayList<PlayerBullet> bulletData = new ArrayList<PlayerBullet>();
-	long prevtime = 0;
+	public static LinkedList<PlayerBullet> bulletData = new LinkedList<PlayerBullet>();
 	
+	
+	long prevtime = 0;
+    
 	boolean isPress = false;
 	
 	int SPEED = 15;
@@ -84,15 +88,18 @@ public class Framework extends Canvas{
     private long gameTime;
     // It is used for calculating elapsed time.
     private long lastTime;
+    
+    public static int gameTime_1p;
+    public static int gameTime_2p;
+    
+    public static int gameTime_1p_sec;
+    public static int gameTime_2p_sec;
 
     // The actual game
     private Game game;
     private Game2p game2p;
     
-    public static int gameTimeTaken1 = 0;
     
-    public static int gameTimeTaken2 = 0;
-
     public static int blackscreenTime = 0;
     /**
      * Image for menu.
@@ -100,9 +107,12 @@ public class Framework extends Canvas{
     private BufferedImage moonLanderMenuImg;
     
     
-    
+    private Audio backgroundMusic = new Audio("resources/bgm/gameBGM.wav", true);
     
 
+    
+
+    
     /* 스코어 */
     public static Score score = new Score();
 
@@ -126,8 +136,7 @@ public class Framework extends Canvas{
             this.add(btnLevel4);
             this.add(btnLevel5);
 
-           
-            btnLevel1.setVisible(add);
+            
             btnLevel1.setBounds(100, 400, 100, 50);
             /* Level 1 */
             
@@ -192,9 +201,11 @@ public class Framework extends Canvas{
             this.add(btnLevelMode);
             this.add(btnMain);
 
+            
             btn1p.setVisible(add);
             btn1p.setBounds(100, 400, 125, 50);
 
+            
             btn2p.setVisible(add);
             btn2p.setBounds(250, 400, 125, 50);
             
@@ -259,6 +270,7 @@ public class Framework extends Canvas{
      */
     private void Initialize() {
 
+    	backgroundMusic.start();
     }
 
     /**
@@ -295,19 +307,20 @@ public class Framework extends Canvas{
                     gameTime += System.nanoTime() - lastTime;
 
                     game.UpdateGame(gameTime, mousePosition());
-
                     
                     if(isPress) {
                     	makeBullet();
                     }
-                    moveBullet();
+                    deleteBullet();
                     
                     lastTime = System.nanoTime();
                     break;
                 case PLAYING2P:
                     gameTime += System.nanoTime() - lastTime;
-                    gameTimeTaken1 += 1;
-                    gameTimeTaken2 += 1;
+                    gameTime_1p += 1;
+                    gameTime_2p += 1;
+                    gameTime_1p_sec = gameTime_1p/GAME_FPS;
+                    gameTime_2p_sec = gameTime_2p/GAME_FPS;
                     game2p.UpdateGame(gameTime, mousePosition());
 
                     lastTime = System.nanoTime();
@@ -315,8 +328,9 @@ public class Framework extends Canvas{
 
                 case BLACKSCREEN:
                     gameTime += System.nanoTime() - lastTime;
-                    gameTimeTaken1 += 1;
-                    gameTimeTaken2 += 1;
+                    gameTime_1p += 1;
+                    gameTime_2p += 1;
+                    
 
                     game2p.UpdateGame(gameTime, mousePosition());
 
@@ -328,8 +342,8 @@ public class Framework extends Canvas{
                 case LEVEL_MENU:
                     break;
                 case GAMEOVER2P:
-                    gameTimeTaken1 = 0;
-                    gameTimeTaken2 = 0;
+                    gameTime_1p = 0;
+                    gameTime_2p = 0;
                     break;
                 case MAIN_MENU:
                     // ...
@@ -405,20 +419,21 @@ public class Framework extends Canvas{
                 for (PlayerBullet b : bulletData)//총알 그리기 
                 {
                       g2d.drawOval((int) (b.x - 1), (int) (b.y - 1), 5, 5); 
+                      g2d.fillOval((int) (b.x - 1), (int) (b.y - 1), 5, 5); 
                }
                 Mainbutton(false);
                 Levelbutton(false);
                 break;
             case PLAYING2P:
                 game2p.Draw(g2d, mousePosition());
-                if(gameTimeTaken1>160 && gameTimeTaken2>160) {
+                if(gameTime_1p_sec>7 && gameTime_2p_sec>7) {
                 	game2p.DrawLandingArea1(g2d, getMousePosition());
                 	game2p.DrawLandingArea2(g2d, getMousePosition());
                 }
-                else if(gameTimeTaken1<160 && gameTimeTaken2>160) {
+                else if(gameTime_1p_sec<7 && gameTime_2p_sec>7) {
                 	game2p.DrawLandingArea2(g2d, getMousePosition());
                 }
-                else if(gameTimeTaken1>160&&gameTimeTaken2<160) {
+                else if(gameTime_1p_sec>7&&gameTime_2p_sec<7) {
                 	game2p.DrawLandingArea1(g2d, getMousePosition());
                 }
                 else {
@@ -434,6 +449,7 @@ public class Framework extends Canvas{
                 blackscreenTime += 1;
                 if (blackscreenTime > 50) {
                     Framework.gameState = Framework.GameState.PLAYING2P;
+                    blackscreenTime = 0;
                 }
                 Mainbutton(false);
                 Levelbutton(false);
@@ -533,6 +549,38 @@ public class Framework extends Canvas{
         // We change game status so that the game can start.
         gameState = GameState.PLAYING2P;
     }
+    public void makeBullet()
+    {
+          if (System.currentTimeMillis() - prevtime > 300)//약 0.3초(300/1000) 마다 총알 생성 
+          {
+        	    double x1 = PlayerRocket.rocket1_X+pr.rocketImgWidth/2; 
+        	    double y1 = PlayerRocket.rocket1_Y+pr.rocketImgHeight; 
+        	    double x2 = mouse.x; 
+        	    double y2 = mouse.y; 
+                double d = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));//네모와 마우스 사이의 거리 측정 
+                double vx = (x2 - x1) / d * SPEED; 
+                double vy = (y2 - y1) / d * SPEED;//총알 속도 계산 
+                PlayerBullet playerBullet = new PlayerBullet(x1, y1, vx, vy);//총알 객체 생성 
+                bulletData.add(playerBullet);//링크드리스트에 저장 
+                prevtime = System.currentTimeMillis();//생성된 시간 저장 
+         }
+    
+}
+	public void deleteBullet() 
+    {
+          for (int i = 0; i < bulletData.size(); i++) 
+          { 
+                if (bulletData.get(i).moveBullet() == false)//화면을 벗어나면 삭제 하기 
+                { 
+                	
+                    bulletData.remove(i); 
+                    break; 
+               } 
+        }
+    }
+	public static LinkedList<PlayerBullet> getBulletDatas() {
+        return bulletData;
+    }
 
     /**
      * Returns the position of the mouse pointer in game frame/window. If mouse
@@ -574,34 +622,11 @@ public class Framework extends Canvas{
                 break;
         }
     }
-    public void makeBullet()
-    { 
-          if (System.currentTimeMillis() - prevtime > 300)//약 0.3초(300/1000) 마다 총알 생성 
-          { 
-        	    double x1 = PlayerRocket.rocket1_X+pr.rocketImgWidth/2; 
-        	    double y1 = PlayerRocket.rocket1_Y+pr.rocketImgHeight; 
-        	    double x2 = mouse.x; 
-        	    double y2 = mouse.y; 
-                double d = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));//네모와 마우스 사이의 거리 측정 
-                double vx = (x2 - x1) / d * SPEED; 
-                double vy = (y2 - y1) / d * SPEED;//총알 속도 계산 
-                PlayerBullet bullet = new PlayerBullet(x1, y1, vx, vy);//총알 객체 생성 
-                bulletData.add(bullet);//배열에 저장 
-                prevtime = System.currentTimeMillis();//생성된 시간 저장 
-         } 
-    } 
     
-    public void moveBullet() 
-    {
-          for (int i = 0; i < bulletData.size(); i++) 
-          { 
-                if (bulletData.get(i).moveBullet() == false)//화면을 벗어나면 삭제 하기 
-                { 
-                      bulletData.remove(i); 
-                      break; 
-               } 
-        } 
-    }
+    
+    
+    
+    
 
     /**
      * This method is called when mouse button is clicked.
@@ -613,20 +638,20 @@ public class Framework extends Canvas{
 
     }
     public void mousePressed(MouseEvent e) {
-        
-	    isPress = true; 
+
+        isPress = true;
         makeBullet();
-        
+
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-    	
+
         isPress = false;
-        
+
     }
 
-	@Override
+    
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		

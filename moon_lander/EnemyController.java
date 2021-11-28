@@ -5,45 +5,60 @@ import java.awt.Graphics2D;
 
 public class EnemyController {
 
-    private LinkedList<Moving_Enemy> e = new LinkedList<Moving_Enemy>();
-    Moving_Enemy tempEnemy;
+    private LinkedList<Enemy> enemyList = new LinkedList<Enemy>();
+    Enemy tempEnemy;
+    private int unMovedEnemyID = 1;
+    private int movingEnemyID = 2;
+    private int bulletEnemyID = 3;
 
     public EnemyController(int count, int id) {
-        for (int i = 0; i < count; i++) {
-            addEnemy(new Moving_Enemy(id));
-        }
+        initEnemy(count, id);
     }
 
     public void ResetController(int count, int id) {
-        e.clear();
+        enemyList.clear();
+        initEnemy(count, id);
+    }
+
+    private void initEnemy(int count, int id) {
         for (int i = 0; i < count; i++) {
-            addEnemy(new Moving_Enemy(id));
+            int generatorIdx = i + 1;
+            if (generatorIdx <= unMovedEnemyID) {
+                id = unMovedEnemyID;
+                addEnemy(new Enemy(id));
+            } else if (generatorIdx >= movingEnemyID) {
+                id = movingEnemyID;
+                addEnemy(new Moving_Enemy(id));
+            }
         }
     }
 
     public void Draw(Graphics2D g2d) {
-        for (int i = 0; i < e.size(); i++) {
-            tempEnemy = e.get(i);
+        for (int i = 0; i < enemyList.size(); i++) {
+            tempEnemy = enemyList.get(i);
             tempEnemy.Draw(g2d);
         }
     }
 
     public void Update() {
-        for (int i = 0; i < e.size(); i++) {
-            tempEnemy = e.get(i);
-            tempEnemy.tick();
+        for (int i = 0; i < enemyList.size(); i++) {
+            tempEnemy = enemyList.get(i);
+            if (tempEnemy.getID() == movingEnemyID) {
+                Moving_Enemy temp = (Moving_Enemy) tempEnemy; // 다운 캐스팅
+                temp.tick();
+            }
         }
     }
 
-    public LinkedList<Moving_Enemy> getEnemyList() {
-        return e;
+    public LinkedList<Enemy> getEnemyList() {
+        return enemyList;
     }
 
-    public void addEnemy(Moving_Enemy Enemy) {
-        e.add(Enemy);
+    public void addEnemy(Enemy Enemy) {
+        enemyList.add(Enemy);
     }
 
-    public void removeEnemy(Moving_Enemy Enemy) {
-        e.remove(Enemy);
+    public void removeEnemy(Enemy Enemy) {
+        enemyList.remove(Enemy);
     }
 }

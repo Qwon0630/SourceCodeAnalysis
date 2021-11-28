@@ -3,6 +3,7 @@ package moon_lander;
 import java.awt.Graphics2D;
 
 
+
 import java.net.URL;
 import java.util.Random;
 import java.awt.image.BufferedImage;
@@ -19,6 +20,7 @@ public class Bullet {
     public int x;
 
     public int y;
+    
 
     
     
@@ -31,6 +33,8 @@ public class Bullet {
 
     public int bulletImageHeight;
 
+    
+    
     public Bullet(int _x, int _y) {
         this.x = _x;
         this.y = _y;
@@ -40,6 +44,8 @@ public class Bullet {
         	this.bulletSpeedY = 5;
         }
     }
+    
+    
     
 
     public void tick() {
@@ -64,6 +70,7 @@ public class Bullet {
     public Rectangle drawRect() {
         return new Rectangle(x, y, bulletImageWidth, bulletImageHeight);
     }
+    
 
     public void Draw(Graphics2D g2d) {
         g2d.drawImage(bulletImage, x, y, null);

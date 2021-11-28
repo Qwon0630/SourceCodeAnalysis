@@ -142,11 +142,8 @@ public class Game2p {
         Rectangle item33 = item3.drawRect();
 
         if (rocket1.intersects(item11) || rocket2.intersects(item11)) {
-            item1.isTouched = true;
-            Framework.gameState = Framework.gameState.BLACKSCREEN;
-            
-            
-            
+        
+        	item1.blackScreenItem();
         }
         else if(rocket1.intersects(item22)||rocket2.intersects(item22)) {
         	if(rocket1.intersects(item22)) {
@@ -158,20 +155,18 @@ public class Game2p {
         	Framework.gameState = Framework.gameState.GAMEOVER2P;
         }
         else if(rocket1.intersects(item33)||rocket2.intersects(item33)) {
-        	item3.isTouched = true;
-        	if(rocket1.intersects(item33)) {
-        		Framework.gameTimeTaken2 = 0;
-        		
-        	}
-        	else if(rocket2.intersects(item33)) {
-        		Framework.gameTimeTaken1 = 0;
-        	}
+        	int player = 0;
+        	if (rocket1.intersects(item33)) {
+        		player = 1;
+                item3.hideLandingAreaItem(player);
+
+            } else if (rocket2.intersects(item33)) {
+                player = 2;
+                item3.hideLandingAreaItem(player);
+            }
+        	player = 0;
         }
-        else {
-        	item1.isTouched = false;
-        	item2.isTouched = false;
-        	item3.isTouched = false;
-        }
+        
 
         // Checks where the player rocket is. Is it still in the space or is it landed
         // or crashed?
@@ -258,11 +253,11 @@ public class Game2p {
         } else {
             if (playerRocket.crashed_1p) {
                 g2d.setColor(Color.red);
-                g2d.drawString("1p win!", Framework.frameWidth / 2 - 95, Framework.frameHeight / 3);
+                g2d.drawString("2p win!", Framework.frameWidth / 2 - 95, Framework.frameHeight / 3);
                 g2d.drawImage(redBorderImg, 0, 0, Framework.frameWidth, Framework.frameHeight, null);
             } else if (playerRocket.crashed_2p) {
                 g2d.setColor(Color.red);
-                g2d.drawString("2p win!", Framework.frameWidth / 2 - 95, Framework.frameHeight / 3);
+                g2d.drawString("1p win!", Framework.frameWidth / 2 - 95, Framework.frameHeight / 3);
                 g2d.drawImage(redBorderImg, 0, 0, Framework.frameWidth, Framework.frameHeight, null);
 
             }

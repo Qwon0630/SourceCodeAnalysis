@@ -75,6 +75,7 @@ public class PlayerRocket {
     
     private int fuelGauge;
     private int fuelGaugeHeight = 20;
+    private int currentGameMode;
 
     public PlayerRocket(int level, int mode) {
     	if(mode==1) {
@@ -100,15 +101,10 @@ public class PlayerRocket {
     		Initialize(1);
     		LoadContent(2);
     	}
-    		
-    	
-        
-        
-
-        
+    	currentGameMode = mode;
         // Now that we have rocketImgWidth we set starting x coordinate.
-        if((Framework.frameWidth - rocketImgWidth)>0) {
-        rocket1_X = random.nextInt(Framework.frameWidth - rocketImgWidth);
+        if ((Framework.frameWidth - rocketImgWidth) > 0) {
+            rocket1_X = random.nextInt(Framework.frameWidth - rocketImgWidth);
         }
         
     }
@@ -243,7 +239,9 @@ public class PlayerRocket {
         g2d.setColor(Color.black);
         g2d.fillRect(0, 20, fuelGauge, fuelGaugeHeight);
     }
-    
+    public void addFeul(int plus) {
+        this.fuelGauge += plus;
+    }
     public Rectangle makeRect1p() {
         return new Rectangle(rocket1_X , rocket1_Y , rocketImgWidth, rocketImgHeight);
     }
@@ -256,14 +254,23 @@ public class PlayerRocket {
      * Here we move the rocket.
      */
     public void Update() {
+    	if(currentGameMode == 1) {
+    		if (Canvas.keyboardKeyState(KeyEvent.VK_W) && (Canvas.getBlock() == false)) {
+                speed1p_Y -= speedAccelerating;
+                fuelGauge -= 2;
+            }
+
+            else
+                speed1p_Y += speedStopping;
+    	}
+    	else {
+    		if (Canvas.keyboardKeyState(KeyEvent.VK_W))
+                speed1p_Y -= speedAccelerating;
+            else
+                speed1p_Y += speedStopping;
+    	}
     	
-        if (Canvas.keyboardKeyState(KeyEvent.VK_W)) {
-            speed1p_Y -= speedAccelerating;
-            fuelGauge -= 2;
-        }
-        
-        else
-            speed1p_Y += speedStopping;
+
 
         
         if (Canvas.keyboardKeyState(KeyEvent.VK_A))
@@ -324,15 +331,21 @@ public class PlayerRocket {
             rocket2_Y = 0;
             speed2p_Y = 0;
         }
+        
+        if (fuelGauge == 0)
+            Canvas.changeBlockState(true);
     }
 
     public void Draw(Graphics2D g2d) {
         g2d.setColor(Color.white);
         
         g2d.drawString("Rocket1p coordinates: " + rocket1_X + " : " + rocket1_Y, 5, 15);
-        g2d.drawString("Rocket2p coordinates: " + rocket2_X + " : " + rocket2_Y, 500, 15);
+        if (Framework.gameState == Framework.GameState.PLAYING2P)
+            g2d.drawString("Rocket2p coordinates: " + rocket2_X + " : " + rocket2_Y, 500, 15);
         
-        drawFuelGuage(g2d);
+        if (currentGameMode == 1) {
+            drawFuelGuage(g2d);
+        }
         // If the rocket is landed.
         if (landed_1p) {
             g2d.drawImage(rocketLandedImg, rocket1_X, rocket1_Y, null);
@@ -344,8 +357,9 @@ public class PlayerRocket {
         // If the rocket is still in the space.
         else {
             // If player hold down a W key we draw rocket fire.
-            if (Canvas.keyboardKeyState(KeyEvent.VK_W))
+            if (Canvas.keyboardKeyState(KeyEvent.VK_W) && (Canvas.getBlock() == false)) {
                 g2d.drawImage(rocketFireImg, rocket1_X + 12, rocket1_Y + 66, null);
+            }
             g2d.drawImage(rocketImg, rocket1_X, rocket1_Y, null);
         }
         if (landed_2p) {

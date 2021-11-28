@@ -70,7 +70,19 @@ public class Item{
 
     public void Draw(Graphics2D g2d) {
         g2d.drawImage(itemImg, x, y, null);
-
+    }
+    
+    public void blackScreenItem() {
+    	Framework.gameState = Framework.gameState.BLACKSCREEN;
+    }
+    
+    public void hideLandingAreaItem(int player) {
+    	if(player==1) {
+    		Framework.gameTime_2p = 0;
+    	}
+    	else if(player==2) {
+    		Framework.gameTime_1p = 0;
+    	}
     }
 
 }

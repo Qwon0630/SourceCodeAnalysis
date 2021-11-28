@@ -5,7 +5,7 @@ import java.util.Vector;
 
 public class Score {
     /* 스코어 */
-    public Vector<Integer> score = new Vector<Integer>();
+    private Vector<Integer> score = new Vector<Integer>();
 
     public Score() {
         addScore(0);

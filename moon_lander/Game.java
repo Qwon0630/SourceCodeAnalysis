@@ -6,12 +6,9 @@ import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
-
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.awt.*;
 import java.awt.event.*;
-
 
 /**
  * Actual game.
@@ -20,15 +17,12 @@ import java.awt.event.*;
  */
 
 public class Game extends MouseAdapter {
-	
-	
-    ArrayList<Bullet> bulletData = new ArrayList<Bullet>();//만든 총알들을 저장
-    
+
     private int stageLevel;
     /**
      * The space rocket with which player will have to land.
      */
-    private PlayerRocket playerRocket = new PlayerRocket(1,1);
+    private PlayerRocket playerRocket = new PlayerRocket(1, 1);
 
     /**
      * Landing area on which rocket will have to land.
@@ -45,42 +39,27 @@ public class Game extends MouseAdapter {
      */
     private BufferedImage redBorderImg;
     /* Enemy */
-    private int unMovedEnemyID = 1;
-    private int movingEnemyID = 2;
-    private Enemy UnmoveEnemy = new Enemy(unMovedEnemyID);
 
-    private EnemyController moving_Enemy = new EnemyController(1, movingEnemyID);
-
-    private MovingEnemyWithBullet movingBulletEnemy = new MovingEnemyWithBullet();
-    
-
+    private EnemyController moving_Enemy = new EnemyController(1, 1);
+    /* Score */
     private int baseScore = 1000;
+    private int decreaseScore = 15;
+    /* Reset Variables */
+    private int currentEnemyCount; // 게임 재시작 시 적의 숫자를 저장
+    private int currentEnemyId; // 게임 재시작 시 적의 아이디를 저장
 
-    
-    
-//    public void mousePressed(MouseEvent e)//마우스를 버튼을 누루면 
-//    { 
-//          isPress = true; 
-//          makeBullet();//총알 생성 
-//   } 
-//   
-//   public void mouseReleased(MouseEvent e)//마우스 버튼을 놓으면 
-//   { 
-//         isPress = false; 
-//  }
     public Game(int level) {
         Framework.gameState = Framework.GameState.GAME_CONTENT_LOADING;
         stageLevel = level;
         Thread threadForInitGame = new Thread() {
             @Override
             public void run() {
-            	
+
                 // Sets variables and objects for the game.
                 Initialize();
                 // Load game files (images, sounds, ...)
                 LoadContent();
-                
-                
+
                 Framework.gameState = Framework.GameState.PLAYING;
             }
         };
@@ -91,37 +70,31 @@ public class Game extends MouseAdapter {
      * Set variables and objects for the game.
      */
     private void Initialize() {
-        
+        int gravityLevel = 1;
+        int playerRocketMode = 1;
+        int enemyCount = 0;
+        int defaultEnemyID = 1;
         switch (stageLevel) {
-            case 1:
-            	playerRocket = new PlayerRocket(1,1);
-                landingArea = new LandingArea(1);
-                break;
-            case 2:
-            	playerRocket = new PlayerRocket(1,1);
-                landingArea = new LandingArea(1);
-                UnmoveEnemy = new Enemy(unMovedEnemyID);
-                break;
-            case 3:
-            	playerRocket = new PlayerRocket(1,1);
-                landingArea = new LandingArea(1);
-                UnmoveEnemy = new Enemy(unMovedEnemyID);
-                moving_Enemy = new EnemyController(1,movingEnemyID);
-                break;
-            case 4:
-            	playerRocket = new PlayerRocket(2,1);
-                landingArea = new LandingArea(1);
-                UnmoveEnemy = new Enemy(unMovedEnemyID);
-                moving_Enemy = new EnemyController(2,movingEnemyID);
-                break;
-            default:
-            	playerRocket = new PlayerRocket(3,1);
-                landingArea = new LandingArea(1);
-                UnmoveEnemy = new Enemy(unMovedEnemyID);
-                movingBulletEnemy = new MovingEnemyWithBullet();
-                moving_Enemy = new EnemyController(3, movingEnemyID);
-                break;
+        case 2:
+            enemyCount = 1;
+            break;
+        case 3:
+            enemyCount = 2;
+            break;
+        case 4:
+            gravityLevel = 2;
+            enemyCount = 3;
+            break;
+        case 5:
+            gravityLevel = 3;
+            enemyCount = 4;
+            break;
         }
+        currentEnemyCount = enemyCount;
+        currentEnemyId = defaultEnemyID;
+        playerRocket = new PlayerRocket(gravityLevel, playerRocketMode);
+        landingArea = new LandingArea(1);
+        moving_Enemy = new EnemyController(enemyCount, defaultEnemyID);
     }
 
     /**
@@ -145,17 +118,9 @@ public class Game extends MouseAdapter {
     public void RestartGame() {
         playerRocket.ResetPlayer();
         landingArea.ResetLandingArea();
-        
-        if (stageLevel >= 1)
-            UnmoveEnemy.ResetEnemy(unMovedEnemyID);
+        Canvas.changeBlockState(false);
         baseScore = 1000;
-        if (stageLevel >= 2)
-            moving_Enemy.ResetController(stageLevel, movingEnemyID);
-        
-        if (stageLevel == 5)
-            movingBulletEnemy.Reset();
-       
-        
+        moving_Enemy.ResetController(currentEnemyCount, currentEnemyId);
     }
 
     /**
@@ -168,16 +133,17 @@ public class Game extends MouseAdapter {
         // Move the rocket
         playerRocket.Update();
         moving_Enemy.Update();
-        movingBulletEnemy.Update();
+        // movingBulletEnemy.Update();
+
         // Checks where the player rocket is. Is it still in the space or is it landed
         // or crashed?
         // First we check bottom y coordinate of the rocket if is it near the landing
         // area.
-        
         if (playerRocket.rocket1_Y + playerRocket.rocketImgHeight - 10 > landingArea.landingArea1_Y) {
             // Here we check if the rocket is over landing area.
-            if ((playerRocket.rocket1_X > landingArea.landingArea1_X) && (playerRocket.rocket1_X < landingArea.landingArea1_X
-                    + landingArea.landingArea1ImgWidth - playerRocket.rocketImgWidth)) {
+            if ((playerRocket.rocket1_X > landingArea.landingArea1_X)
+                    && (playerRocket.rocket1_X < landingArea.landingArea1_X + landingArea.landingArea1ImgWidth
+                            - playerRocket.rocketImgWidth)) {
                 // Here we check if the rocket speed isn't too high.
                 if (playerRocket.speed1p_Y <= playerRocket.topLandingSpeed)
                     playerRocket.landed_1p = true;
@@ -191,27 +157,26 @@ public class Game extends MouseAdapter {
 
         /* Enemy Collision */
         Rectangle rocket = playerRocket.makeRect1p();
-       
-        Rectangle border = MovingEnemyWithBullet.bullet.drawRect();
-        if (UnmoveEnemy.collision(rocket, UnmoveEnemy.getBounds()) || rocket.intersects(border)) {
-            playerRocket.crashed_1p = true;
-            Framework.gameState = Framework.gameState.GAMEOVER;
-        }
         /* Moving Enemy Collision */
-        LinkedList<Moving_Enemy> enemys = moving_Enemy.getEnemyList();
-
+        LinkedList<Enemy> enemys = moving_Enemy.getEnemyList();
+        LinkedList<PlayerBullet> bulletData = Framework.getBulletDatas();
         for (int i = 0; i < enemys.size(); i++) {
-            Moving_Enemy tempEnemy = enemys.get(i);
+            Enemy tempEnemy = enemys.get(i);
             Rectangle enemyBorder = tempEnemy.updateBounds();
             if (tempEnemy.collision(rocket, enemyBorder)) {
                 playerRocket.crashed_1p = true;
                 Framework.gameState = Framework.gameState.GAMEOVER;
                 break;
             }
+            // Player Bullet collision
+            for (int j = 0; j < bulletData.size(); j++) {
+                Rectangle bulletBorder = bulletData.get(j).drawRect();
+                if (tempEnemy.collision(enemyBorder, bulletBorder)) {
+                    moving_Enemy.removeEnemy(tempEnemy);
+                    playerRocket.addFeul(20);
+                }
+            }
         }
-        
-        
-
     }
 
     /**
@@ -222,19 +187,9 @@ public class Game extends MouseAdapter {
      */
     public void Draw(Graphics2D g2d, Point mousePosition) {
         g2d.drawImage(backgroundImg, 0, 0, Framework.frameWidth, Framework.frameHeight, null);
-
         landingArea.DrawlandingArea1p(g2d);
-
         playerRocket.Draw(g2d);
-
-        UnmoveEnemy.Draw(g2d);
-
         moving_Enemy.Draw(g2d);
-        
-        movingBulletEnemy.Draw(g2d);
-        
-        
-        
     }
 
     /**
@@ -254,7 +209,7 @@ public class Game extends MouseAdapter {
             g2d.drawString("You have successfully landed!", Framework.frameWidth / 2 - 100, Framework.frameHeight / 3);
             g2d.drawString("You have landed in " + gameTime / Framework.secInNanosec + " seconds.",
                     Framework.frameWidth / 2 - 100, Framework.frameHeight / 3 + 20);
-            baseScore -= (gameTime / Framework.secInNanosec) * 15;
+            baseScore -= (gameTime / Framework.secInNanosec) * decreaseScore;
             Framework.score.addScore(baseScore);
         } else {
             g2d.setColor(Color.red);
