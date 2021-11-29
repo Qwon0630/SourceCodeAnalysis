@@ -1,63 +1,72 @@
 package moon_lander;
 
-import java.awt.Color;
-
-import java.awt.Graphics2D;
-import java.net.URL;
-import java.time.chrono.ThaiBuddhistChronology;
 import java.util.LinkedList;
-import java.util.Random;
-import java.awt.image.BufferedImage;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.imageio.ImageIO;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 
-public class MovingEnemyWithBullet {
-    
-    private Random random;
-    /* enemy x position */
-    public static int x;
-    /* enemy y position */
-    public static int y;
-    /* Image */
-    private String image = "/resources/images/movingEnemy.png";
+public class MovingEnemyWithBullet extends Enemy {
 
-    private BufferedImage movingEnemyImg;
-    
-    public static Bullet bullet;
+    private int velY; // y축 이동 속도
+    private int interval;
+    private int maxInterval = 150;
 
-    public MovingEnemyWithBullet() {
-       
-        LordImage();
-        random = new Random();
-        x = random.nextInt(Framework.frameWidth - 60);
-        y = Framework.frameHeight - 40;
-        bullet = new Bullet(x+10,y);
-        
+    private LinkedList<Bullet> bulletList = new LinkedList<Bullet>();
+
+    public MovingEnemyWithBullet(int id) {
+        super(id);
+        velY = generateRandNum(10);
+        interval = 0;
     }
 
-    public void Reset() {
-        x = random.nextInt(Framework.frameWidth - 60);
-        y = Framework.frameHeight - 40;
-        bullet = new Bullet(x+10,y);
-    }
-    
-    public void Update() {
-    	bullet.tick();
-    }
-
-    public void LordImage() {
-        try {
-            URL enemyImgUrl = this.getClass().getResource(image);
-            movingEnemyImg = ImageIO.read(enemyImgUrl);
-        } catch (Exception e) {
-            Logger.getLogger(Moving_Enemy.class.getName()).log(Level.SEVERE, null, e);
+    private void move() {
+        int currentY = this.getY();
+        setY(currentY += velY);
+        // for reset y coordinate
+        if (currentY >= Framework.frameHeight) {
+            setY(0);
         }
     }
 
-    public void Draw(Graphics2D g2d) {
-        g2d.setColor(Color.black);
-        g2d.drawImage(movingEnemyImg, x, y, null);
-        bullet.Draw(g2d);
+    private void fireBulletCheck() {
+        this.interval += generateRandNum(20);
+        if (interval > maxInterval) {
+            this.interval = maxInterval;
+        }
+    }
+
+    public void fireBullet() {
+        if (interval < maxInterval)
+            return;
+        this.interval = 0;
+        bulletList.add(new Bullet(getX(), getY()));
+    }
+
+    public void Update() {
+        fireBulletCheck();
+        fireBullet();
+        move();
+        for (int i = 0; i < bulletList.size(); i++) {
+            Bullet bullet = bulletList.get(i);
+            bullet.tick();
+            if (bullet.getY() >= Framework.frameHeight)
+                bulletList.remove(bullet);
+        }
+    }
+
+    public void bulletDraw(Graphics2D g2d) {
+        for (int i = 0; i < bulletList.size(); i++) {
+            Bullet b = bulletList.get(i);
+            b.Draw(g2d);
+        }
+    }
+
+    public boolean bulletCollision(Rectangle a) {
+        for (int i = 0; i < bulletList.size(); i++) {
+            Bullet b = bulletList.get(i);
+            if (b.collision(a, b.updateBounds())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

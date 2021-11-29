@@ -22,9 +22,7 @@ public class Enemy {
         random = new Random();
         if (id == 1)
             imgURL = "/resources/images/unmovedenemy.png";
-        else if (id == 2)
-            imgURL = "/resources/images/movingEnemy.png";
-        else if (id == 3)
+        else if (id == 2 || id == 3)
             imgURL = "/resources/images/movingEnemy.png";
         enemyID = id;
         LordImage(imgURL);
@@ -63,18 +61,20 @@ public class Enemy {
         return a.intersects(b);
     }
 
+    public int generateRandNum(int range) {
+        return random.nextInt(range) + 1;
+    }
+
     public void ResetEnemy(int id) {
-        x = random.nextInt(Framework.frameWidth - getImgWidth());
+        x = generateRandNum(Framework.frameWidth - getImgWidth());
         switch (id) {
-        case 1:
-            y = 200;
-            break;
-        case 2:
-            y = Framework.frameHeight - 10;
-            break;
-        case 3:
-            y = Framework.frameHeight - 40;
-            break;
+            case 1:
+                y = 200;
+                break;
+            case 2:
+            case 3:
+                y = Framework.frameHeight - 10;
+                break;
         }
         bounds = updateBounds();
     }
@@ -94,5 +94,6 @@ public class Enemy {
 
     public void Draw(Graphics2D g2d) {
         g2d.drawImage(image, x, y, null);
+
     }
 }

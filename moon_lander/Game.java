@@ -75,20 +75,21 @@ public class Game extends MouseAdapter {
         int enemyCount = 0;
         int defaultEnemyID = 1;
         switch (stageLevel) {
-        case 2:
-            enemyCount = 1;
-            break;
-        case 3:
-            enemyCount = 2;
-            break;
-        case 4:
-            gravityLevel = 2;
-            enemyCount = 3;
-            break;
-        case 5:
-            gravityLevel = 3;
-            enemyCount = 4;
-            break;
+            case 2:
+                enemyCount = 1;
+                break;
+            case 3:
+                enemyCount = 2;
+                break;
+            case 4:
+                gravityLevel = 2;
+                enemyCount = 3;
+                break;
+            case 5:
+                gravityLevel = 3;
+                enemyCount = 4;
+                defaultEnemyID = 3;
+                break;
         }
         currentEnemyCount = enemyCount;
         currentEnemyId = defaultEnemyID;
@@ -174,6 +175,16 @@ public class Game extends MouseAdapter {
                 if (tempEnemy.collision(enemyBorder, bulletBorder)) {
                     moving_Enemy.removeEnemy(tempEnemy);
                     playerRocket.addFeul(20);
+                    baseScore += 120;
+                }
+            }
+            /* bullet Collision */
+            if (tempEnemy.getID() == 3) {
+                MovingEnemyWithBullet shootingEnemy = (MovingEnemyWithBullet) tempEnemy;
+                if (shootingEnemy.bulletCollision(rocket)) {
+                    playerRocket.crashed_1p = true;
+                    Framework.gameState = Framework.gameState.GAMEOVER;
+                    break;
                 }
             }
         }
